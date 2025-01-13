@@ -1,12 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('greeting')
+  async getGreeting(@I18n() i18n: I18nContext): Promise<string> {
+    return i18n.t('greeting'); // 번역 키를 사용
   }
 }

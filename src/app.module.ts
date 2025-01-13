@@ -1,12 +1,29 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { I18nModule } from 'nestjs-i18n';
+import * as path from 'path';
+import { LanguageMiddleware } from './middleware/language.middeware';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { WebScrapperModule } from './module/web/web-scrapper.module';
 
 @Module({
-  imports: [],
+  imports: [
+    I18nModule.forRoot({
+      fallbackLanguage: 'en', // 기본 언어 설정
+      loaderOptions: {
+        path: path.resolve(__dirname, '..', 'i18n'),  // 절대경로로 설정
+        filePattern: '*.json',  // 파일 패턴
+        watch: true,
+      },
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+
 })
-export class AppModule { }
+
+
+//미들웨어 추가
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LanguageMiddleware).forRoutes('*');
+  }
+}
 
